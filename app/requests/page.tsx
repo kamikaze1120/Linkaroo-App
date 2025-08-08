@@ -1,10 +1,11 @@
 "use client"
 
 import { useState } from "react"
-import { ArrowLeft, Users, Clock, Filter, Search } from "lucide-react"
+import { ArrowLeft, Users, Clock, Filter, Search } from 'lucide-react'
 import Link from "next/link"
 import ConsentFlow from "@/components/ConsentFlow"
 import BottomNav from "@/components/BottomNav"
+import AnimatedBackdrop from "@/components/animated-backdrop"
 
 export default function RequestsScreen() {
   const [requests, setRequests] = useState([
@@ -32,7 +33,7 @@ export default function RequestsScreen() {
       message: "Hey! We were in the same meeting. Let's connect on Linkaroo for future collaboration.",
       timestamp: Date.now() - 900000,
       expiresAt: Date.now() + 1200000,
-      requestType: "manual" as const,
+      requestType: "qr_scan" as const,
       permissions: {
         call: true,
         message: true,
@@ -103,7 +104,8 @@ export default function RequestsScreen() {
     const request = requests.find((req) => req.id === selectedRequest)
     if (request) {
       return (
-        <div className="min-h-screen pb-20">
+        <div className="relative min-h-screen pb-20">
+          <AnimatedBackdrop intensity="subtle" />
           <div className="bg-slate-800/90 backdrop-blur-sm border-b border-slate-700 p-4">
             <div className="flex items-center space-x-3">
               <button
@@ -130,7 +132,8 @@ export default function RequestsScreen() {
   }
 
   return (
-    <div className="min-h-screen pb-20">
+    <div className="relative min-h-screen pb-20">
+      <AnimatedBackdrop intensity="subtle" />
       {/* Header */}
       <div className="bg-slate-800/90 backdrop-blur-sm border-b border-slate-700 p-4">
         <div className="flex items-center justify-between">

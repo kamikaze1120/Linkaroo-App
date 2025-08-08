@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { ArrowLeft, Plus, Edit, Trash2, Copy, Users, Briefcase, Heart, Shield, Star } from "lucide-react"
+import { ArrowLeft, Plus, Edit, Trash2, Copy, Users, Briefcase, Heart, Shield, Star } from 'lucide-react'
 import Link from "next/link"
 import BottomNav from "@/components/BottomNav"
 
@@ -184,10 +184,7 @@ export default function ConnectionTemplatesScreen() {
       <div className="min-h-screen pb-20">
         <div className="bg-slate-800/90 backdrop-blur-sm border-b border-slate-700 p-4">
           <div className="flex items-center space-x-3">
-            <button
-              onClick={() => setShowCreateForm(false)}
-              className="text-slate-400 hover:text-white transition-colors"
-            >
+            <button onClick={() => setShowCreateForm(false)} className="text-slate-400 hover:text-white transition-colors">
               <ArrowLeft className="w-6 h-6" />
             </button>
             <h1 className="text-2xl font-bold text-white">Create Template</h1>
@@ -373,22 +370,14 @@ export default function ConnectionTemplatesScreen() {
     <div className="min-h-screen pb-20">
       {/* Header */}
       <div className="bg-slate-800/90 backdrop-blur-sm border-b border-slate-700 p-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-3">
-            <Link href="/profile" className="text-slate-400 hover:text-white transition-colors">
-              <ArrowLeft className="w-6 h-6" />
-            </Link>
-            <div>
-              <h1 className="text-2xl font-bold text-white">Connection Templates</h1>
-              <p className="text-slate-400 text-sm">Preset permissions for different types of contacts</p>
-            </div>
+        <div className="flex items-center space-x-3">
+          <Link href="/profile" className="text-slate-400 hover:text-white transition-colors">
+            <ArrowLeft className="w-6 h-6" />
+          </Link>
+          <div>
+            <h1 className="text-2xl font-bold text-white">Connection Templates</h1>
+            <p className="text-slate-400 text-sm">Preset permissions for different types of contacts</p>
           </div>
-          <button
-            onClick={() => setShowCreateForm(true)}
-            className="bg-blue-600 hover:bg-blue-700 text-white p-2 rounded-lg transition-all"
-          >
-            <Plus className="w-5 h-5" />
-          </button>
         </div>
       </div>
 
@@ -517,11 +506,16 @@ export default function ConnectionTemplatesScreen() {
 
         {/* Privacy Notice */}
         <div className="bg-blue-900/20 border border-blue-500/30 rounded-lg p-4">
-          <h4 className="text-blue-400 font-medium mb-2">🔒 Template Privacy</h4>
-          <p className="text-slate-300 text-sm">
-            Templates provide default settings but can always be customized for individual connections. Your privacy
-            preferences are always respected.
-          </p>
+          <div className="flex items-start space-x-2">
+            <Shield className="w-5 h-5 text-blue-400 mt-0.5 flex-shrink-0" />
+            <div>
+              <h4 className="text-blue-400 font-medium mb-2">🔒 Template Privacy</h4>
+              <p className="text-slate-300 text-sm">
+                Templates provide default settings but can always be customized for individual connections. Your privacy
+                preferences are always respected.
+              </p>
+            </div>
+          </div>
         </div>
       </div>
 

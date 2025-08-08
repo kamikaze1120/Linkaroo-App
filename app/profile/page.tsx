@@ -1,25 +1,11 @@
 "use client"
 
 import { useState } from "react"
-import {
-  User,
-  Shield,
-  LogOut,
-  Eye,
-  EyeOff,
-  Trash2,
-  TrendingUp,
-  AlertTriangle,
-  Clock,
-  Users,
-  Brain,
-  Cloud,
-  MapPin,
-  Layers,
-} from "lucide-react"
+import { User, Shield, LogOut, Eye, EyeOff, Trash2, TrendingUp, AlertTriangle, Clock, Users, Brain, Cloud, MapPin, Layers } from 'lucide-react'
 import Link from "next/link"
 import BottomNav from "@/components/BottomNav"
 import PushNotificationManager from "@/components/PushNotificationManager"
+import { UserAvatar, AvatarUploader } from "@/components/user-avatar"
 
 export default function ProfileScreen() {
   const [profileData, setProfileData] = useState({
@@ -50,8 +36,9 @@ export default function ProfileScreen() {
 
         {/* Profile Picture & Masked ID */}
         <div className="bg-slate-800/80 backdrop-blur-sm rounded-2xl p-6 border border-slate-700 text-center">
-          <div className="w-24 h-24 privacy-gradient rounded-full flex items-center justify-center mx-auto mb-4 secure-glow">
-            <User className="w-12 h-12 text-white" />
+          <div className="flex flex-col items-center gap-3 mb-2">
+            <UserAvatar size={96} ring alt={`${profileData.name}'s avatar`} />
+            <AvatarUploader compact onChange={() => { /* avatar updates are reflected automatically */ }} />
           </div>
           <h2 className="text-xl font-bold text-white mb-2">{profileData.name}</h2>
           <div className="bg-slate-700/50 rounded-lg p-3 mb-4">

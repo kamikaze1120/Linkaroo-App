@@ -1,9 +1,10 @@
 "use client"
 
 import { useState } from "react"
-import { ArrowLeft, TrendingUp, Users, Phone, MessageCircle, Clock, BarChart3, PieChart } from "lucide-react"
+import { ArrowLeft, TrendingUp, Users, Phone, MessageCircle, Clock, BarChart3, PieChart } from 'lucide-react'
 import Link from "next/link"
 import BottomNav from "@/components/BottomNav"
+import AnimatedBackdrop from "@/components/animated-backdrop"
 
 export default function AnalyticsScreen() {
   const [timeRange, setTimeRange] = useState<"7d" | "30d" | "90d">("30d")
@@ -17,7 +18,7 @@ export default function AnalyticsScreen() {
       totalMessages: 156,
       averageConnectionDuration: 4.2,
       peakHours: [14, 15, 16, 19, 20],
-      connectionMethods: { qr: 60, nearby: 25, manual: 15 },
+      connectionMethods: { qr: 60, nearby: 25, nfc: 15 },
       dailyActivity: [
         { date: "Mon", calls: 4, messages: 23, connections: 1 },
         { date: "Tue", calls: 2, messages: 18, connections: 0 },
@@ -36,7 +37,7 @@ export default function AnalyticsScreen() {
       totalMessages: 567,
       averageConnectionDuration: 12.8,
       peakHours: [9, 10, 14, 15, 19, 20],
-      connectionMethods: { qr: 55, nearby: 30, manual: 15 },
+      connectionMethods: { qr: 55, nearby: 30, nfc: 15 },
       dailyActivity: [
         { date: "Week 1", calls: 18, messages: 142, connections: 4 },
         { date: "Week 2", calls: 23, messages: 156, connections: 3 },
@@ -52,7 +53,7 @@ export default function AnalyticsScreen() {
       totalMessages: 1456,
       averageConnectionDuration: 18.5,
       peakHours: [9, 10, 11, 14, 15, 19, 20, 21],
-      connectionMethods: { qr: 50, nearby: 35, manual: 15 },
+      connectionMethods: { qr: 50, nearby: 35, nfc: 15 },
       dailyActivity: [
         { date: "Month 1", calls: 67, messages: 423, connections: 8 },
         { date: "Month 2", calls: 89, messages: 567, connections: 12 },
@@ -77,7 +78,8 @@ export default function AnalyticsScreen() {
   }
 
   return (
-    <div className="min-h-screen pb-20">
+    <div className="relative min-h-screen pb-20">
+      <AnimatedBackdrop intensity="subtle" />
       {/* Header */}
       <div className="bg-slate-800/90 backdrop-blur-sm border-b border-slate-700 p-4">
         <div className="flex items-center justify-between">
@@ -230,14 +232,14 @@ export default function AnalyticsScreen() {
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-3">
                 <div className="w-4 h-4 bg-orange-500 rounded-full"></div>
-                <span className="text-slate-300">Manual Entry</span>
+                <span className="text-slate-300">NFC Tap</span>
               </div>
               <div className="text-right">
-                <div className="text-white font-medium">{data.connectionMethods.manual}%</div>
+                <div className="text-white font-medium">{data.connectionMethods.nfc}%</div>
                 <div className="w-20 h-2 bg-slate-700 rounded-full">
                   <div
                     className="h-2 bg-orange-500 rounded-full"
-                    style={{ width: `${data.connectionMethods.manual}%` }}
+                    style={{ width: `${data.connectionMethods.nfc}%` }}
                   ></div>
                 </div>
               </div>

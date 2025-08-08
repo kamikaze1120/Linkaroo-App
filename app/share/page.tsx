@@ -1,399 +1,257 @@
 "use client"
 
-import { useState } from "react"
+import { useMemo } from "react"
+import Link from "next/link"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Input } from "@/components/ui/input"
-import { QrCode, Zap, Edit3, Share2, Radar, Clock, Shield } from "lucide-react"
-import Link from "next/link"
+import { Zap, QrCode, Radar, Shield, Share2, Smartphone, ArrowLeft } from 'lucide-react'
 import BottomNav from "@/components/BottomNav"
+import AnimatedBackdrop from "@/components/animated-backdrop"
+import { UserAvatar } from "@/components/user-avatar"
 
-const sharingMethods = [
-  {
-    id: "nfc",
-    title: "NFC Tap-to-Share",
-    description: "Instant connection with a simple tap",
-    icon: <Zap className="h-6 w-6" />,
-    href: "/nfc-share",
-    color: "bg-orange-500 hover:bg-orange-600",
-    features: ["⚡ Instant (< 2 seconds)", "🔒 Ultra-secure (4cm range)", "📱 Works offline"],
-    badge: "Fastest",
-    badgeColor: "bg-orange-600",
-  },
-  {
-    id: "proximity",
-    title: "Proximity Detection",
-    description: "Auto-discover nearby users",
-    icon: <Radar className="h-6 w-6" />,
-    href: "/proximity",
-    color: "bg-blue-500 hover:bg-blue-600",
-    features: ["📡 Auto-discovery", "📍 10m range", "🔄 Continuous scanning"],
-    badge: "New",
-    badgeColor: "bg-blue-600",
-  },
-  {
-    id: "qr",
-    title: "QR Code Sharing",
-    description: "Universal compatibility",
-    icon: <QrCode className="h-6 w-6" />,
-    href: "/qr-share",
-    color: "bg-green-500 hover:bg-green-600",
-    features: ["📱 Works on any device", "📷 Camera required", "🎯 Long range"],
-    badge: "Universal",
-    badgeColor: "bg-green-600",
-  },
-  {
-    id: "manual",
-    title: "Manual Entry",
-    description: "Direct contact sharing",
-    icon: <Edit3 className="h-6 w-6" />,
-    href: "/manual-share",
-    color: "bg-purple-500 hover:bg-purple-600",
-    features: ["⌨️ Type contact details", "✅ Always works", "🔗 No hardware needed"],
-    badge: "Reliable",
-    badgeColor: "bg-purple-600",
-  },
-]
-
-const recentShares = [
-  {
-    id: "1",
-    name: "Sarah Johnson",
-    method: "NFC",
-    timestamp: Date.now() - 300000,
-    status: "connected",
-    avatar: "SJ",
-  },
-  {
-    id: "2",
-    name: "Mike Chen",
-    method: "Proximity",
-    timestamp: Date.now() - 600000,
-    status: "connected",
-    avatar: "MC",
-  },
-  {
-    id: "3",
-    name: "Emma Davis",
-    method: "QR Code",
-    timestamp: Date.now() - 900000,
-    status: "pending",
-    avatar: "ED",
-  },
-  {
-    id: "4",
-    name: "Alex Rodriguez",
-    method: "NFC",
-    timestamp: Date.now() - 1200000,
-    status: "connected",
-    avatar: "AR",
-  },
-]
-
-const quickStats = [
-  {
-    title: "Total Shares",
-    value: "47",
-    change: "+12 this week",
-    color: "text-blue-600",
-  },
-  {
-    title: "NFC Connections",
-    value: "28",
-    change: "59% of total",
-    color: "text-orange-600",
-  },
-  {
-    title: "Success Rate",
-    value: "94%",
-    change: "Excellent",
-    color: "text-green-600",
-  },
-]
+type Method = {
+  id: "nfc" | "proximity" | "qr"
+  title: string
+  description: string
+  icon: React.ReactNode
+  href: string
+  color: string
+  badge: string
+  badgeColor: string
+  features: string[]
+}
 
 export default function SharePage() {
-  const [searchQuery, setSearchQuery] = useState("")
+  // Only 3 methods — manual is fully removed to preserve anonymity.
+  const methods = useMemo<Method[]>(
+    () => [
+      {
+        id: "nfc",
+        title: "NFC Tap-to-Share",
+        description: "Instant connection with a simple tap",
+        icon: <Zap className="h-6 w-6" />,
+        href: "/nfc-share",
+        color: "from-amber-300 to-rose-300",
+        badge: "Fastest",
+        badgeColor: "bg-amber-400/80 text-amber-950",
+        features: ["< 2s", "Ultra-secure", "Offline"],
+      },
+      {
+        id: "proximity",
+        title: "Proximity Detection",
+        description: "Auto-discover nearby users",
+        icon: <Radar className="h-6 w-6" />,
+        href: "/proximity",
+        color: "from-teal-300 to-emerald-300",
+        badge: "New",
+        badgeColor: "bg-teal-400/80 text-teal-950",
+        features: ["Auto", "10m range", "Live"],
+      },
+      {
+        id: "qr",
+        title: "QR Code Sharing",
+        description: "Universal compatibility",
+        icon: <QrCode className="h-6 w-6" />,
+        href: "/qr-share",
+        color: "from-violet-300 to-fuchsia-300",
+        badge: "Universal",
+        badgeColor: "bg-violet-400/80 text-violet-950",
+        features: ["Any device", "Camera", "Long range"],
+      },
+    ],
+    []
+  )
 
-  const formatTimeAgo = (timestamp: number) => {
-    const minutes = Math.floor((Date.now() - timestamp) / 60000)
-    if (minutes < 1) return "Just now"
-    if (minutes < 60) return `${minutes}m ago`
-    const hours = Math.floor(minutes / 60)
-    if (hours < 24) return `${hours}h ago`
-    return `${Math.floor(hours / 24)}d ago`
+  const quickStats = [
+    { title: "Shares", value: "47", hint: "+12 this week", tint: "text-emerald-300" },
+    { title: "NFC", value: "28", hint: "59% of total", tint: "text-amber-300" },
+    { title: "Success", value: "94%", hint: "Excellent", tint: "text-rose-300" },
+  ]
+
+  function timeAgo(ts: number) {
+    const m = Math.floor((Date.now() - ts) / 60000)
+    if (m < 1) return "Just now"
+    if (m < 60) return `${m}m ago`
+    const h = Math.floor(m / 60)
+    if (h < 24) return `${h}h ago`
+    return `${Math.floor(h / 24)}d ago`
   }
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case "connected":
-        return "bg-green-100 text-green-800"
-      case "pending":
-        return "bg-yellow-100 text-yellow-800"
-      case "rejected":
-        return "bg-red-100 text-red-800"
-      default:
-        return "bg-gray-100 text-gray-800"
-    }
-  }
-
-  const getMethodIcon = (method: string) => {
-    switch (method.toLowerCase()) {
-      case "nfc":
-        return <Zap className="h-3 w-3 text-orange-600" />
-      case "proximity":
-        return <Radar className="h-3 w-3 text-blue-600" />
-      case "qr code":
-        return <QrCode className="h-3 w-3 text-green-600" />
-      case "manual":
-        return <Edit3 className="h-3 w-3 text-purple-600" />
-      default:
-        return <Share2 className="h-3 w-3 text-gray-600" />
-    }
-  }
+  const recent = [
+    { id: "1", name: "Sarah J.", method: "NFC", t: Date.now() - 300_000, status: "connected", badge: "bg-emerald-400/20 text-emerald-300" },
+    { id: "2", name: "Mike C.", method: "Proximity", t: Date.now() - 600_000, status: "connected", badge: "bg-teal-400/20 text-teal-300" },
+    { id: "3", name: "Emma D.", method: "QR", t: Date.now() - 900_000, status: "pending", badge: "bg-amber-400/20 text-amber-300" },
+  ]
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-20">
-      {/* Header */}
-      <div className="bg-white border-b border-gray-200 px-4 py-4">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-xl font-semibold">Share Contacts</h1>
-            <p className="text-sm text-gray-500">Choose how to connect with others</p>
-          </div>
-          <Share2 className="h-6 w-6 text-blue-500" />
-        </div>
-      </div>
+    <div className="relative min-h-screen bg-neutral-950 text-white pb-24">
+      <AnimatedBackdrop intensity="normal" />
 
-      <div className="p-4 space-y-6">
-        {/* Quick Stats */}
-        <div className="grid grid-cols-3 gap-4">
-          {quickStats.map((stat, index) => (
-            <Card key={index} className="text-center">
-              <CardContent className="p-4">
-                <div className={`text-2xl font-bold ${stat.color} mb-1`}>{stat.value}</div>
-                <p className="text-xs font-medium text-gray-900 mb-1">{stat.title}</p>
-                <p className="text-xs text-gray-500">{stat.change}</p>
+      {/* Header */}
+      <header className="sticky top-0 z-20 border-b border-white/10 bg-neutral-950/60 backdrop-blur">
+        <div className="mx-auto flex max-w-3xl items-center gap-3 px-4 py-3">
+          <Link href="/dashboard">
+            <Button variant="ghost" size="sm" className="text-white hover:bg-white/10">
+              <ArrowLeft className="h-4 w-4" />
+            </Button>
+          </Link>
+          <div>
+            <h1 className="text-lg font-semibold">Share</h1>
+            <p className="text-xs text-white/70">Choose how to securely connect — manual entry is disabled for privacy</p>
+          </div>
+          <div className="ml-auto">
+            <UserAvatar size={28} ring className="cursor-pointer hover:ring-white/25 transition" alt="Your profile" />
+          </div>
+        </div>
+      </header>
+
+      <main className="mx-auto max-w-3xl space-y-6 p-4">
+        {/* Quick stats */}
+        <div className="grid grid-cols-3 gap-3">
+          {quickStats.map((s) => (
+            <Card key={s.title} className="bg-white/5 border-white/10">
+              <CardContent className="p-4 text-center">
+                <div className={`text-2xl font-semibold ${s.tint}`}>{s.value}</div>
+                <div className="text-xs text-white/80">{s.title}</div>
+                <div className="text-[11px] text-white/50">{s.hint}</div>
               </CardContent>
             </Card>
           ))}
         </div>
 
-        {/* Featured: NFC Tap-to-Share */}
-        <Card className="border-orange-200 bg-gradient-to-r from-orange-50 to-yellow-50">
-          <CardContent className="p-6">
-            <div className="flex items-start justify-between mb-4">
-              <div className="flex items-center space-x-3">
-                <div className="w-12 h-12 bg-orange-500 rounded-lg flex items-center justify-center text-white">
+        {/* Featured NFC */}
+        <Card className="relative overflow-hidden border-white/10 bg-white/5 backdrop-blur-sm">
+          <CardHeader className="relative">
+            <div className="flex items-start justify-between">
+              <div className="flex items-center gap-3">
+                <div className="rounded-xl bg-amber-200/15 p-3 text-amber-300 ring-1 ring-amber-300/20">
                   <Zap className="h-6 w-6" />
                 </div>
                 <div>
-                  <h3 className="text-lg font-semibold text-gray-900">NFC Tap-to-Share</h3>
-                  <p className="text-sm text-gray-600">The fastest way to share contacts</p>
+                  <CardTitle className="text-base text-white">NFC Tap-to-Share</CardTitle>
+                  <CardDescription className="text-white/75">The fastest, most secure way to share</CardDescription>
                 </div>
               </div>
-              <Badge className="bg-orange-600 text-white">Recommended</Badge>
+              <Badge className="rounded-full bg-amber-300/20 px-2 py-1 text-xs font-medium text-amber-200 ring-1 ring-amber-300/30">
+                Recommended
+              </Badge>
             </div>
-
-            <div className="grid grid-cols-3 gap-3 mb-4 text-xs">
-              <div className="text-center">
-                <div className="font-semibold text-orange-700">⚡ Instant</div>
-                <div className="text-gray-600">&lt; 2 seconds</div>
+          </CardHeader>
+          <CardContent className="relative">
+            <div className="mb-4 grid grid-cols-3 gap-3 text-center text-[11px] text-white/70">
+              <div>
+                <div className="font-semibold text-amber-200">⚡ Instant</div>
+                <div className="text-white/80">{"< 2s"}</div>
               </div>
-              <div className="text-center">
-                <div className="font-semibold text-orange-700">🔒 Secure</div>
-                <div className="text-gray-600">4cm range</div>
+              <div>
+                <div className="font-semibold text-rose-200">🔒 Secure</div>
+                <div className="text-white/80">4cm range</div>
               </div>
-              <div className="text-center">
-                <div className="font-semibold text-orange-700">📱 Offline</div>
-                <div className="text-gray-600">No internet</div>
+              <div>
+                <div className="font-semibold text-amber-200">📱 Offline</div>
+                <div className="text-white/80">No internet</div>
               </div>
             </div>
-
-            <Link href="/nfc-share">
-              <Button className="w-full bg-orange-500 hover:bg-orange-600 text-white">
-                <Zap className="h-4 w-4 mr-2" />
+            <Link href="/nfc-share" className="block">
+              <Button className="group w-full border border-white/15 bg-white/8 text-white hover:bg-white/15">
+                <Zap className="mr-2 h-4 w-4 transition-transform group-hover:scale-110" />
                 Start NFC Sharing
               </Button>
             </Link>
           </CardContent>
         </Card>
 
-        {/* Sharing Methods Grid */}
-        <div>
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">All Sharing Methods</h2>
-          <div className="grid grid-cols-1 gap-4">
-            {sharingMethods.map((method) => (
-              <Link key={method.id} href={method.href}>
-                <Card className="hover:shadow-md transition-shadow cursor-pointer">
-                  <CardContent className="p-4">
-                    <div className="flex items-start space-x-4">
-                      <div
-                        className={`w-12 h-12 rounded-lg flex items-center justify-center text-white ${method.color}`}
-                      >
-                        {method.icon}
-                      </div>
-
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center space-x-2 mb-1">
-                          <h3 className="font-semibold text-gray-900 truncate">{method.title}</h3>
-                          <Badge className={`text-xs ${method.badgeColor} text-white`}>{method.badge}</Badge>
-                        </div>
-                        <p className="text-sm text-gray-600 mb-2">{method.description}</p>
-                        <div className="space-y-1">
-                          {method.features.map((feature, index) => (
-                            <div key={index} className="text-xs text-gray-500">
-                              {feature}
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-
-                      <div className="text-gray-400">
-                        <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                        </svg>
-                      </div>
+        {/* Methods grid (Manual removed) */}
+        <section>
+          <h2 className="mb-3 text-sm font-medium text-white/80">All Methods</h2>
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+            {methods.map((m) => (
+              <Link key={m.id} href={m.href} className="group">
+                <Card className="bg-white/5 ring-1 ring-white/10 transition-all hover:bg-white/8 hover:shadow-lg hover:shadow-black/30">
+                  <CardHeader className="space-y-2">
+                    <div className="w-12 rounded-xl bg-gradient-to-br p-3 text-neutral-900 shadow-sm transition-transform group-hover:scale-105 group-active:scale-100"
+                      style={{ backgroundImage: `linear-gradient(135deg,var(--tw-gradient-from),var(--tw-gradient-to))` }}
+                    >
+                      <span className={`sr-only`}>{m.title}</span>
+                      <div className={`from-rose-300 to-rose-300 hidden`} />
+                      <div className={`from-teal-300 to-emerald-300 hidden`} />
+                      <div className={`from-violet-300 to-fuchsia-300 hidden`} />
+                      {/* Using tailwind gradient via class on parent */}
                     </div>
-                  </CardContent>
+                    <div className="flex items-center gap-2">
+                      <div className={`rounded-xl bg-gradient-to-br ${m.color} p-2 text-neutral-900`}>{m.icon}</div>
+                      <CardTitle className="text-base">{m.title}</CardTitle>
+                      <Badge className={`ml-auto ${m.badgeColor}`}>{m.badge}</Badge>
+                    </div>
+                    <CardDescription className="text-white/70">{m.description}</CardDescription>
+                    <div className="flex gap-2">
+                      {m.features.map((f) => (
+                        <span
+                          key={f}
+                          className="rounded-full bg-white/10 px-2 py-0.5 text-[10px] text-white/75 backdrop-blur transition-colors"
+                        >
+                          {f}
+                        </span>
+                      ))}
+                    </div>
+                  </CardHeader>
                 </Card>
               </Link>
             ))}
           </div>
+        </section>
+
+        {/* Privacy note — clarifies no manual/direct entry */}
+        <Card className="bg-white/5 border-white/10">
+          <CardContent className="flex items-start gap-3 p-4">
+            <div className="rounded-md bg-emerald-300/80 p-2 text-emerald-950">
+              <Shield className="h-4 w-4" />
+            </div>
+            <p className="text-sm text-white/80">
+              Linkaroo does not support manual contact entry to protect anonymity and ensure mutual consent.
+              Use NFC, QR, or Proximity to connect securely.
+            </p>
+          </CardContent>
+        </Card>
+
+        {/* Quick CTA row */}
+        <div className="grid grid-cols-2 gap-3">
+          <Link href="/nfc-share" className="block">
+            <div className="group flex h-12 items-center justify-center gap-2 rounded-md border border-white/10 bg-white/5 text-white transition-all hover:bg-white/10 hover:shadow-lg hover:shadow-black/30">
+              <Smartphone className="h-4 w-4 text-amber-300 transition-transform group-hover:scale-110" />
+              <span className="text-sm font-medium">NFC</span>
+            </div>
+          </Link>
+          <Link href="/qr-share" className="block">
+            <div className="group flex h-12 items-center justify-center gap-2 rounded-md border border-white/10 bg-white/5 text-white transition-all hover:bg-white/10 hover:shadow-lg hover:shadow-black/30">
+              <QrCode className="h-4 w-4 text-violet-300 transition-transform group-hover:scale-110" />
+              <span className="text-sm font-medium">QR</span>
+            </div>
+          </Link>
         </div>
 
-        {/* Search Existing Contacts */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-base">Share with Existing Contact</CardTitle>
-            <CardDescription>Send your contact info to someone you know</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="relative mb-4">
-              <Input
-                placeholder="Search contacts..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10"
-              />
-              <svg
-                className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                />
-              </svg>
-            </div>
-
-            {searchQuery && (
-              <div className="text-center text-gray-500 text-sm">Search results would appear here...</div>
-            )}
-          </CardContent>
-        </Card>
-
-        {/* Recent Sharing Activity */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-base">Recent Activity</CardTitle>
-            <CardDescription>Your latest contact sharing sessions</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-3">
-              {recentShares.map((share) => (
-                <div key={share.id} className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
-                  <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                    <span className="text-blue-700 font-medium text-sm">{share.avatar}</span>
+        {/* Recent activity (no direct/manual mentions) */}
+        <section className="space-y-2">
+          <h3 className="text-sm font-medium text-white/80">Recent Activity</h3>
+          <div className="space-y-2">
+            {recent.map((r) => (
+              <div key={r.id} className="flex items-center gap-3 rounded-lg border border-white/10 bg-white/5 p-3">
+                <div className="flex size-10 items-center justify-center rounded-full bg-white/10 text-[11px] font-medium">
+                  {r.name.split(" ").map((n) => n[0]).join("")}
+                </div>
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center gap-2">
+                    <div className="truncate text-sm">{r.name}</div>
+                    <span className={`rounded px-1.5 py-0.5 text-[10px] ${r.badge}`}>{r.method}</span>
                   </div>
-
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center space-x-2 mb-1">
-                      <h4 className="font-medium text-sm truncate">{share.name}</h4>
-                      <Badge className={`text-xs ${getStatusColor(share.status)}`}>{share.status}</Badge>
-                    </div>
-                    <div className="flex items-center space-x-3 text-xs text-gray-500">
-                      <div className="flex items-center space-x-1">
-                        {getMethodIcon(share.method)}
-                        <span>{share.method}</span>
-                      </div>
-                      <div className="flex items-center space-x-1">
-                        <Clock className="h-3 w-3" />
-                        <span>{formatTimeAgo(share.timestamp)}</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Tips & Best Practices */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-base flex items-center space-x-2">
-              <Shield className="h-4 w-4 text-green-600" />
-              <span>Sharing Best Practices</span>
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-3 text-sm">
-              <div className="flex items-start space-x-2">
-                <div className="w-1.5 h-1.5 bg-blue-500 rounded-full mt-2 flex-shrink-0"></div>
-                <div>
-                  <span className="font-medium">Use NFC for face-to-face meetings</span>
-                  <p className="text-gray-600 text-xs">Fastest and most secure method for in-person connections</p>
+                  <div className="text-[11px] text-white/60">{timeAgo(r.t)}</div>
                 </div>
               </div>
-
-              <div className="flex items-start space-x-2">
-                <div className="w-1.5 h-1.5 bg-blue-500 rounded-full mt-2 flex-shrink-0"></div>
-                <div>
-                  <span className="font-medium">Enable proximity detection at events</span>
-                  <p className="text-gray-600 text-xs">Automatically discover other Linkaroo users nearby</p>
-                </div>
-              </div>
-
-              <div className="flex items-start space-x-2">
-                <div className="w-1.5 h-1.5 bg-blue-500 rounded-full mt-2 flex-shrink-0"></div>
-                <div>
-                  <span className="font-medium">QR codes work across all devices</span>
-                  <p className="text-gray-600 text-xs">Best option when other person doesn't have NFC</p>
-                </div>
-              </div>
-
-              <div className="flex items-start space-x-2">
-                <div className="w-1.5 h-1.5 bg-blue-500 rounded-full mt-2 flex-shrink-0"></div>
-                <div>
-                  <span className="font-medium">Manual entry as backup</span>
-                  <p className="text-gray-600 text-xs">Always available when technology fails</p>
-                </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Privacy Reminder */}
-        <Card className="border-green-200 bg-green-50">
-          <CardContent className="p-4">
-            <div className="flex items-start space-x-2">
-              <Shield className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0" />
-              <div>
-                <h4 className="text-sm font-medium text-green-900 mb-1">Your Privacy is Protected</h4>
-                <p className="text-xs text-green-700">
-                  All sharing methods use masked contact information. Your real phone number is never shared directly
-                  with other users.
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+            ))}
+          </div>
+        </section>
+      </main>
 
       <BottomNav activeTab="share" />
     </div>

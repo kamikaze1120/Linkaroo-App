@@ -1,8 +1,10 @@
 "use client"
 
 import { useState } from "react"
-import { Search, Send, ArrowLeft, MoreVertical, Phone, Shield } from "lucide-react"
+import { Search, Send, ArrowLeft, MoreVertical, Phone, Shield } from 'lucide-react'
+import Link from "next/link"
 import BottomNav from "@/components/BottomNav"
+import AnimatedBackdrop from "@/components/animated-backdrop"
 
 export default function MessagesScreen() {
   const [selectedChat, setSelectedChat] = useState<number | null>(null)
@@ -63,7 +65,8 @@ export default function MessagesScreen() {
     const chat = chats.find((c) => c.id === selectedChat)
 
     return (
-      <div className="min-h-screen pb-20 flex flex-col">
+      <div className="relative min-h-screen pb-20">
+        <AnimatedBackdrop intensity="subtle" />
         {/* Chat Header */}
         <div className="bg-slate-800/90 backdrop-blur-sm border-b border-slate-700 p-4">
           <div className="flex items-center justify-between">
@@ -142,7 +145,8 @@ export default function MessagesScreen() {
   }
 
   return (
-    <div className="min-h-screen pb-20">
+    <div className="relative min-h-screen pb-20">
+      <AnimatedBackdrop intensity="subtle" />
       {/* Header */}
       <div className="bg-slate-800/90 backdrop-blur-sm border-b border-slate-700 p-4">
         <h1 className="text-2xl font-bold text-white">Secure Messages</h1>
